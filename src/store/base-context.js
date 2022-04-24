@@ -1,14 +1,14 @@
 import React from "react";
 
-const context = React.createContext({
- initialVal: 15
+export const BaseContext = React.createContext({
+    initialVal: 15
 });
 
-const ContextProvider = () => {
+const ContextProvider = (props) => {
     return (
-        <div>
-            
-        </div>
+        <BaseContext.Provider value={{ initialVal: 16 }}>
+            {props.children}
+        </BaseContext.Provider>
     );
 };
 
