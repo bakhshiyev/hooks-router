@@ -2,12 +2,24 @@ import { useState, useEffect, useRef, useContext, useCallback, useMemo, useReduc
 // import { BaseContext } from '../store/base-context';
 import Button from './Button';
 
+const numberReducer = (state, action) => {
+    if (action.type === 'UPDATE') {
+        return { number: action.val, isEven: state.isEven };
+    }
+    else if (action.type === 'CHECK') {
+        return { number: state.number, isEven: action.val };
+    }
+    return { number: '---', isEven: '---' };
+};
+
 const ButtonIterator = () => {
     // console.log('Iterator');
     const [count, setCount] = useState(0);
 
-    const [enteredNumber, setEnteredNumber] = useState('...');
-    const [isEven, setIsEven] = useState('...');
+    // const [enteredNumber, setEnteredNumber] = useState('...');
+    // const [isEven, setIsEven] = useState('...');
+
+    const [enteredNumberState, dispatchEnteredNumber] = useReducer(numberReducer, { number: '___', isEven: '___' });
 
     // const ctx = useContext(BaseContext);
     // const inputRef = useRef();
@@ -34,7 +46,8 @@ const ButtonIterator = () => {
 
     const inputChangeHandler = (event) => {
         console.log(event.target.value);
-        setEnteredNumber(() => { return event.target.value; });
+        // setEnteredNumber(() => { return event.target.value; });
+        dispatchEnteredNumber({ type: 'UPDATE', val: event.target.value });
         // console.log(enteredNumber);
         // if (enteredNumber % 2 === 0) {
         //     setIsEven(() => { return 'EVEN'; });
@@ -43,11 +56,15 @@ const ButtonIterator = () => {
     };
 
     useEffect(() => {
-        if (enteredNumber % 2 === 0) {
-            setIsEven(() => { return 'EVEN'; });
+        if (enteredNumberState.number % 2 === 0) {
+            // setIsEven(() => { return 'EVEN'; });
+            dispatchEnteredNumber({ type: 'CHECK', val: 'EVEN' });
         }
-        else setIsEven(() => { return 'ODD'; });
-    }, [enteredNumber]);
+        else
+            // setIsEven(() => { return 'ODD'; });
+            dispatchEnteredNumber({ type: 'CHECK', val: 'ODD' });
+
+    }, [enteredNumberState.number]);
 
     return (
         <div>
@@ -57,7 +74,7 @@ const ButtonIterator = () => {
             {/* <button className="bg-blue-800 text-white" onClick={baseChangeHandler}>iterate this instead</button> */}
             {/* <button className="bg-blue-800 text-white" onClick={takeValueOfCtx}>take value from context</button> */}
             <Button onClick={clickHandler} type='button' className="bg-red-500 text-white w-[80px]" operations={operations}>add</Button>
-            <p>{`${enteredNumber} is ${isEven}`}</p>
+            <p>{`${enteredNumberState.number} is ${enteredNumberState.isEven}`}</p>
             <input className='bg-red-500 text-white' type='number' onChange={inputChangeHandler} />
         </div>
     );
